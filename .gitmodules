@@ -1,3 +1,9 @@
 [submodule "external/googletest"]
 	path = external/googletest
 	url = https://github.com/google/googletest.git
+[submodule "external/libzmq"]
+	path = external/libzmq
+	url = https://github.com/zeromq/libzmq.git
+[submodule "cppzmq"]
+	path = external/cppzmq
+	url = https://github.com/zeromq/cppzmq.git
