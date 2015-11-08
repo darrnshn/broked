@@ -1,0 +1,11 @@
+#pragma once
+
+#define CONGA_VERSION 0
+
+#define CONGA_MAJOR_VERSION    (CONGA_VERSION / 100000)
+#define CONGA_MINOR_VERSION    (CONGA_VERSION / 100 % 1000)
+#define CONGA_SUBMINOR_VERSION (CONGA_VERSION % 100)
+
+namespace conga
+{
+}
