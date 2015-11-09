@@ -26,3 +26,4 @@ endmacro(add_unit_test)
 
 add_unit_test(version)
 add_unit_test(transport)
+add_unit_test(message)
