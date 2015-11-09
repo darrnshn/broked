@@ -1,43 +1,72 @@
 #include "gtest/gtest.h"
 #include "queue.hpp"
+#include "transport.hpp"
+
+class QueueMockServerTest : public ::testing::Test
+{
+public:
+  QueueMockServerTest()
+    : ctx{1}
+    , server{ctx, ZMQ_ROUTER}
+  {
+  }
+
+protected:
+  virtual void SetUp()
+  {
+    server.bind("tcp://*:5555");
+  }
+
+  zmq::context_t ctx;
+  zmq::socket_t server;
+};
+
 
 TEST(Queue, CanInitializeWithAddress)
 {
-  conga::queue<int> q{"localhost:5000"};
-  EXPECT_EQ("localhost::5000", q.address());
+  conga::queue q{"tcp://localhost:5555"};
+  EXPECT_EQ("tcp://localhost:5555", q.address());
 }
 
 TEST(Queue, HasDefaultName)
 {
-  conga::queue<int> q{"localhost:5000"};
+  conga::queue q{"tcp://localhost:5555"};
   EXPECT_EQ("", q.name());
 }
 
 TEST(Queue, CanInitializeWithName)
 {
-  conga::queue<int> q{"localhost:5000", "foo"};
+  conga::queue q{"tcp://localhost:5555", "foo"};
+  EXPECT_EQ("tcp://localhost:5555", q.address());
   EXPECT_EQ("foo", q.name());
 }
 
-TEST(Queue, CanPushMessage)
+TEST_F(QueueMockServerTest, CanPushAMessage)
 {
-  // Set up mock server
-  nanomsg stuff
+  conga::queue q{"tcp://localhost:5555", "", "identity"};
+  q.push("event", "data");
 
-  conga::queue<int> q{"localhost:5000"};
-  q.push(0, "foo");
+  auto result = conga::transport::detail::recv_multipart(server);
 
-  EXPECT_EQ("foo", msg.data());
+  ASSERT_EQ(3, result.size());
+  EXPECT_EQ("identity", result[0]);
+  EXPECT_EQ("event", result[1]);
+  EXPECT_EQ("data", result[2]);
 }
 
-TEST(Queue, CanPushAndReceiveMessage)
+TEST_F(QueueMockServerTest, CanPushMultipleMessages)
 {
-  conga::queue<int> q;
-  q.push(0, "foo");
-  q.on(0, [&q](conga::message&& msg) { q.close(); });
-}
+  conga::queue q{"tcp://localhost:5555", "", "identity"};
+  q.push("event", "1");
+  q.push("event", "2");
 
-TEST(Queue, CanAttachSingleHandler)
-{
+  auto result1 = conga::transport::detail::recv_multipart(server);
+  auto result2 = conga::transport::detail::recv_multipart(server);
 
+  EXPECT_EQ("identity", result1[0]);
+  EXPECT_EQ("event", result1[1]);
+  EXPECT_EQ("1", result1[2]);
+  EXPECT_EQ("identity", result2[0]);
+  EXPECT_EQ("event", result2[1]);
+  EXPECT_EQ("2", result2[2]);
 }

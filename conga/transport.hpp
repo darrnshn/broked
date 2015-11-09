@@ -52,6 +52,11 @@ void send_message(zmq::socket_t& socket, const message& msg)
   detail::send_multipart(socket, { msg.event(), msg.data() });
 }
 
+void send_message(zmq::socket_t& socket, std::string&& event, std::string&& data)
+{
+  detail::send_multipart(socket, { std::move(event), std::move(data) });
+}
+
 conga::message recv_message(zmq::socket_t& socket)
 {
   auto result = detail::recv_multipart(socket);

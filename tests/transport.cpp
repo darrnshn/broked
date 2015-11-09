@@ -50,3 +50,13 @@ TEST_F(TransportReqRepTest, CanSendAndReceiveMessage)
 
   EXPECT_EQ(msg, result);
 }
+
+TEST_F(TransportReqRepTest, CanEmplaceAndReceiveMessage)
+{
+  conga::transport::send_message(req, "connect", "hello");
+
+  auto result = conga::transport::recv_message(rep);
+
+  EXPECT_EQ("connect", result.event());
+  EXPECT_EQ("hello", result.data());
+}
