@@ -1,6 +1,6 @@
 #pragma once
 
-namespace conga
+namespace bd
 {
 
 class message
@@ -23,8 +23,12 @@ private:
 
 bool operator==(const message& a, const message& b)
 {
-  return a.event() == b.event() &&
-         a.data() == b.data();
+  return a.event() == b.event() && a.data() == b.data();
+}
+
+bool operator!=(const message& a, const message& b)
+{
+  return !(a == b);
 }
 
 }

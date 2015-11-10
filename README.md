@@ -1,5 +1,5 @@
-# conga
+# broked
 
-[![Build Status](https://travis-ci.org/darrnshn/conga.svg?branch=master)](https://travis-ci.org/darrnshn/conga)
+[![Build Status](https://travis-ci.org/darrnshn/broked.svg?branch=master)](https://travis-ci.org/darrnshn/broked)
 
-Event-based distributed task queue written in C++11.
+Event-based brokered messaging system in C++11.

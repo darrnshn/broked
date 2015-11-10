@@ -4,14 +4,24 @@
 
 #include <zmq.hpp>
 
-namespace conga
+namespace bd
 {
 
 namespace transport
 {
 
-namespace detail
+struct message_type
 {
+  static const std::string hello;
+  static const std::string message;
+  static const std::string bye;
+  static const std::string heartbeat;
+};
+
+const std::string message_type::hello = "1";
+const std::string message_type::message = "2";
+const std::string message_type::bye = "3";
+const std::string message_type::heartbeat = "4";
 
 void send_multipart(zmq::socket_t& socket, const std::vector<std::string>& strs)
 {
@@ -45,23 +55,21 @@ std::vector<std::string> recv_multipart(zmq::socket_t& socket)
   return result;
 }
 
-}
-
 void send_message(zmq::socket_t& socket, const message& msg)
 {
-  detail::send_multipart(socket, { msg.event(), msg.data() });
+  send_multipart(socket, { "", message_type::message, msg.event(), msg.data() });
 }
 
 void send_message(zmq::socket_t& socket, std::string&& event, std::string&& data)
 {
-  detail::send_multipart(socket, { std::move(event), std::move(data) });
+  send_multipart(socket, { "", message_type::message, std::move(event), std::move(data) });
 }
 
-conga::message recv_message(zmq::socket_t& socket)
+bd::message recv_message(zmq::socket_t& socket)
 {
-  auto result = detail::recv_multipart(socket);
+  auto result = recv_multipart(socket);
   // TODO: handle bad packets
-  return { result[0], result[1] };
+  return { result[2], result[3] };
 }
 
 }

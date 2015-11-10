@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(conga)
+project(broked)
 
-include_directories(conga)
+include_directories(broked)
 
 add_subdirectory(external)
 

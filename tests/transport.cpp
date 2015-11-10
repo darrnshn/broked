@@ -43,19 +43,19 @@ TEST_F(TransportReqRepTest, CanUseZeroMQ)
 
 TEST_F(TransportReqRepTest, CanSendAndReceiveMessage)
 {
-  conga::message msg{"connect", "hello"};
-  conga::transport::send_message(req, msg);
+  bd::message msg{"connect", "hello"};
+  bd::transport::send_message(req, msg);
 
-  auto result = conga::transport::recv_message(rep);
+  auto result = bd::transport::recv_message(rep);
 
   EXPECT_EQ(msg, result);
 }
 
 TEST_F(TransportReqRepTest, CanEmplaceAndReceiveMessage)
 {
-  conga::transport::send_message(req, "connect", "hello");
+  bd::transport::send_message(req, "connect", "hello");
 
-  auto result = conga::transport::recv_message(rep);
+  auto result = bd::transport::recv_message(rep);
 
   EXPECT_EQ("connect", result.event());
   EXPECT_EQ("hello", result.data());
