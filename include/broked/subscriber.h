@@ -1,4 +1,5 @@
-#pragma once
+#ifndef BROKED_SUBSCRIBER_H
+#define BROKED_SUBSCRIBER_H
 
 #include "socket.hpp"
 
@@ -10,11 +11,7 @@ namespace bd
 class subscriber
 {
 public:
-  using callback_type = std::function<void(socket&, message&&)>;
-  using internal_callback_type = std::function<void(socket&)>;
-
-  using nullary_callback_type = std::function<void()>;
-  using unary_callback_type = std::function<void(socket&)>;
+  using on_connect_callback_type = std::function<void(channel&)>;
 
   void on_connect(const internal_callback_type& callback)
   {
@@ -60,3 +57,5 @@ private:
 };
 
 }
+
+#endif // BROKED_SUBSCRIBER_H

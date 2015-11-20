@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "broked.hpp"
+#include "broked/broked.h"
 
 TEST(Version, IsUpToDate)
 {

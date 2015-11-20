@@ -1,40 +1,49 @@
 #include "gtest/gtest.h"
-#include "message.hpp"
+#include "broked/message.h"
+#include "broked/serialization.h"
 
-TEST(Message, HasDefaultValues)
-{
-  bd::message msg;
-  EXPECT_EQ("", msg.event());
-  EXPECT_EQ("", msg.data());
-  EXPECT_EQ(0, msg.size());
+#include <vector>
+
+class MessageTest : public ::testing::Test {
+public:
+  MessageTest()
+    : ctx{1}
+    , req{ctx, ZMQ_REQ}
+    , rep{ctx, ZMQ_REP} { }
+
+protected:
+  virtual void SetUp() {
+    rep.bind("tcp://*:5555");
+    req.connect("tcp://localhost:5555");
+  }
+
+  zmq::context_t ctx;
+  zmq::socket_t req;
+  zmq::socket_t rep;
+};
+
+TEST_F(MessageTest, CanSendRecvHelloWithNoSubscribedTasks) {
+  bd::hello_message original{{}};
+
+  bd::socket_send_archive s_ar(req);
+  serialize(s_ar, original);
+
+  bd::socket_recv_archive r_ar(rep);
+  bd::hello_message received;
+  serialize(r_ar, received);
+
+  EXPECT_EQ(original, received);
 }
 
-TEST(Message, CanInitializeWithEvent)
-{
-  bd::message msg{"connect"};
-  EXPECT_EQ("connect", msg.event());
-  EXPECT_EQ("", msg.data());
-  EXPECT_EQ(0, msg.size());
-}
+TEST_F(MessageTest, CanSendRecvHelloWithSubscribedTasks) {
+  bd::hello_message original{{"A", "B"}};
 
-TEST(Message, CanInitializeWithData)
-{
-  bd::message msg{"connect", "hello world"};
-  EXPECT_EQ("connect", msg.event());
-  EXPECT_EQ("hello world", msg.data());
-  EXPECT_EQ(11, msg.size());
-}
+  bd::socket_send_archive s_ar(req);
+  serialize(s_ar, original);
 
-TEST(Message, IsEqualToItself)
-{
-  bd::message msg{"connect", "hello world"};
-  EXPECT_EQ(msg, msg);
-}
+  bd::socket_recv_archive r_ar(rep);
+  bd::hello_message received;
+  serialize(r_ar, received);
 
-TEST(Message, IsNotEqualToDifferentMessage)
-{
-  bd::message msg1{"connect", "hello world"};
-  bd::message msg2{"connect", "hello world!"};
-
-  EXPECT_NE(msg1, msg2);
+  EXPECT_EQ(original, received);
 }
